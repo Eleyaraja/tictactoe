@@ -4,7 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic Tac Toe</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .game-container {
+            width: 400px;
+            margin: 40px auto;
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .game-board {
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .row {
+            display: flex;
+        }
+        
+        .cell {
+            width: 120px;
+            height: 120px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .cell:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .cell:active {
+            background-color: #ccc;
+        }
+        
+        .game-info {
+            margin-top: 20px;
+        }
+        
+        .turn-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .reset-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .reset-button:hover {
+            background-color: #3e8e41;
+        }
+        
+        .reset-button:active {
+            background-color: #2f6f31;
+        }
+    </style>
 </head>
 <body>
     <div class="game-container">
@@ -32,6 +115,68 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        let currentPlayer = 'X';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let gameOver = false;
+
+        // Function to handle cell click
+        function handleCellClick(event) {
+            if (gameOver) return;
+            const cellIndex = event.target.id.split('-')[1];
+            if (gameBoard[cellIndex] !== '') return;
+            gameBoard[cellIndex] = currentPlayer;
+            event.target.textContent = currentPlayer;
+            checkForWin();
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            document.getElementById('turn').textContent = `Player ${currentPlayer}'s turn`;
+        }
+
+        // Function to check for win
+        function checkForWin() {
+            const winConditions = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
+            for (let i = 0; i < winConditions.length; i++) {
+                const condition = winConditions[i];
+                if (gameBoard[condition[0]] !== '' && gameBoard[condition[0]] === gameBoard[condition[1]] && gameBoard[condition[1]] === gameBoard[condition[2]]) {
+                    gameOver = true;
+                    document.getElementById('turn').textContent = `Player ${gameBoard[condition[0]]} wins!`;
+                    return;
+                }
+            }
+
+            // Check for draw
+            if (!gameBoard.includes('')) {
+                gameOver = true;
+                document.getElementById('turn').textContent = 'It\'s a draw!';
+            }
+        }
+
+        // Function to reset game
+        function resetGame() {
+            currentPlayer = 'X';
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            gameOver = false;
+            document.getElementById('turn').textContent = `Player ${currentPlayer}'s turn`;
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => cell.textContent = '');
+        }
+
+        // Add event listeners to cells
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+
+        // Add event listener to reset button
+        document.getElementById('reset-button').addEventListener('click', resetGame);
+    </script>
 </body>
 </html>
